@@ -23,12 +23,33 @@ python scripts/social_report.py O "Realty Income" --days 2 --limit 12
 ```
 출력: 콘솔 다이제스트 + `social_<TICKER>.json` (앱/다른 도구 연동용).
 
+## 대표 기능: 실시간 시세 (신선도 보장)
+기억/추정으로 답하지 않고 **매번 토스 API로 조회 + 데이터 체결시각 표시 + 10분 초과 시 STALE 경고**.
+```bash
+python scripts/quote.py 삼성전자 SK하이닉스 카카오   # 이름(별칭) 또는 6자리 코드
+python scripts/quote.py 005930 --quotes            # 호가창 10단계까지
+python scripts/quote.py 005930 --json --max-age 5  # JSON, 5분 초과면 STALE
+```
+exit code: `0`=최신 · `3`=STALE(오래됨) · `4`=조회실패/미발견 → 스크립트/에이전트가 오래된 값을 신뢰하지 않도록 강제.
+
+## 대표 기능: 토스증권 급등주 + 테마 리포트
+토스증권 웹(WTS)이 쓰는 공개 JSON API로 **급등 랭킹 → 테마 집계 → 테마별 소속 종목·전체 테마 등락**을 한 번에. 인증/쿠키 불필요.
+```bash
+python scripts/toss_theme_report.py                      # KR 급등주 + 핫테마
+python scripts/toss_theme_report.py --market us          # 미국 급등주
+python scripts/toss_theme_report.py --rank biggest_total_amount  # 토스 거래대금 랭킹
+```
+출력: 콘솔 다이제스트 + `toss_theme_<market>.json`.
+⚠️ 비공식(웹 내부) API — 과도한 호출 금지, 스키마 변경 가능. 공식 Open API(주문 등)와는 별개.
+
 ## 구조
 ```
-scripts/social_report.py   # X + Reddit + StockTwits 통합 리포트
-config/mcporter.json       # Exa 전역검색 MCP 설정
-SETUP.md                   # 새 컴퓨터 세팅 가이드 (도구 설치 + 로그인)
-.gitignore                 # 쿠키/자격증명/venv 차단
+scripts/social_report.py      # X + Reddit + StockTwits 통합 리포트
+scripts/quote.py              # 토스증권 실시간 시세 (체결시각·STALE 경고)
+scripts/toss_theme_report.py  # 토스증권 급등 랭킹 + 테마(TICS) 리포트
+config/mcporter.json          # Exa 전역검색 MCP 설정
+SETUP.md                      # 새 컴퓨터 세팅 가이드 (도구 설치 + 로그인)
+.gitignore                    # 쿠키/자격증명/venv 차단
 ```
 
 ## 시작하기
